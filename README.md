@@ -138,7 +138,7 @@ curl -X DELETE http://localhost:8080/task/mysql/:db_name/:task_id
 
 ## 推荐实践
 
-考虑热更新的场景更多在于在同一库中，即同一任务重增加或减少表的监听，所以若增加任务，认为是一种较大业务变更，需更改配置文件中的 mongo2queues 或 mysql2queues 后重新启动本服务。
+考虑热更新的场景更多在于在同一库中，即同一任务只增加或减少表的监听，所以若增加任务，认为是一种较大业务变更，需更改配置文件中的 mongo2queues 或 mysql2queues 后重新启动本服务。
 
 更为推荐的实践方式是为特定的业务使用专门的 changes2queue 服务，如上文中提到的博客业务，则使用专门的 changes2queue-blog 服务；若用户服务则使用专门的 changes2queue-user 服务。这将极少出现变更 mongo2queues 或 mysql2queues 的情况，从而避免重启服务过程中的消息丢失（RedisBroadcast 这类广播消息队列会存在该问题）。
 
@@ -148,4 +148,4 @@ curl -X DELETE http://localhost:8080/task/mysql/:db_name/:task_id
 
 ## 编译打包
 
-make package TAG=v1.0
+`make package TAG=v1.0.0` 或 `make package`

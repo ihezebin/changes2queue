@@ -1,0 +1,35 @@
+service_name = "changes2queue"
+port = 8080
+
+#mongo_dsn = "mongodb://root:root@127.0.0.1:27017/changes2queue?authSource=admin&replicaSet=rs0"
+#mongo_dsn = "mongodb://hezebin:root@mongo-sts-0.mongo.default:27017,mongo-sts-1.mongo.default:27017/changes2queue?authSource=admin&replicaSet=rs0"
+#mysql_dsn = "mysql://root:root@127.0.0.1:3306/changes2queue?charset=utf8mb4&parseTime=True&loc=Local"
+#oss_dsn = "minio://CscaPrbfoRO0EapeM56m:RNxYKk9XtdIAyFnCHNLnyYei2tmX4L59ACeDe0Ap@127.0.0.1:9000/test"
+#elasticsearch_url = "http://localhost:9200"
+
+[logger]
+    level = "info"
+    filename = "log/changes2queue.log"
+
+#[email]
+#    host="smtp.qq.com"
+#    port=587
+#    username="xxx@qq.com"
+#    password="xxxxx"
+
+#[redis]
+#    addrs = ["127.0.0.1:6379"]
+#    password = "root"
+#[redis]
+#   addrs = ["redis-sts-0.redis.default:7000", "redis-sts-1.redis.default:7000", "redis-sts-2.redis.default:7000"]
+#   password = "root"
+
+#[pulsar]
+#    url = "pulsar://localhost:6650"
+#    topic = "persistent://public/default/changes2queue"
+#    subscription = "changes2queue"
+
+#[kafka]
+#    address = "127.0.0.1:9092"
+#    topic = "changes2queue"
+#    partition = 0

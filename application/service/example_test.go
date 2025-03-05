@@ -10,7 +10,7 @@ import (
 )
 
 func TestExampleService(t *testing.T) {
-	exampleRepository := repository.NewExampleMockRepository()
+	exampleRepository := repository.GetExampleRepository()
 
 	svc := &ExampleApplicationService{
 		exampleDomainService: service.NewExampleServiceMock(exampleRepository),

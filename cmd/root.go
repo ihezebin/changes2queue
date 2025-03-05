@@ -6,23 +6,19 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ihezebin/changes2queue/component/cache"
-	"github.com/ihezebin/changes2queue/component/emailc"
-	"github.com/ihezebin/changes2queue/component/oss"
-	"github.com/ihezebin/changes2queue/component/pubsub"
-	"github.com/ihezebin/changes2queue/component/storage"
-	"github.com/ihezebin/changes2queue/config"
-	"github.com/ihezebin/changes2queue/cron"
-	"github.com/ihezebin/changes2queue/domain/repository"
-	"github.com/ihezebin/changes2queue/domain/service"
-	"github.com/ihezebin/changes2queue/server"
-	"github.com/ihezebin/changes2queue/worker"
-	"github.com/ihezebin/changes2queue/worker/example"
 	_ "github.com/ihezebin/soup"
 	"github.com/ihezebin/soup/logger"
 	"github.com/ihezebin/soup/runner"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
+
+	"github.com/ihezebin/changes2queue/component/cache"
+	"github.com/ihezebin/changes2queue/config"
+	"github.com/ihezebin/changes2queue/domain/repository"
+	"github.com/ihezebin/changes2queue/domain/service"
+	"github.com/ihezebin/changes2queue/server"
+	"github.com/ihezebin/changes2queue/worker"
+	"github.com/ihezebin/changes2queue/worker/example"
 )
 
 var (
@@ -71,7 +67,6 @@ func Run(ctx context.Context) error {
 
 			tasks := make([]runner.Task, 0)
 			tasks = append(tasks, worker.NewWorKeeper(example.NewExampleWorker()))
-			tasks = append(tasks, cron.NewCron())
 			tasks = append(tasks, httpServer)
 
 			runner.NewRunner(tasks...).Run(ctx)
@@ -98,69 +93,18 @@ func initComponents(ctx context.Context, conf *config.Config) error {
 	}
 
 	// init storage
-	if conf.MysqlDsn != "" {
-		if err := storage.InitMySQLClient(ctx, conf.MysqlDsn); err != nil {
-			return errors.Wrap(err, "init mysql storage client error")
-		}
-	}
-	if conf.MongoDsn != "" {
-		if err := storage.InitMongoClient(ctx, conf.MongoDsn); err != nil {
-			return errors.Wrap(err, "init mongo storage client error")
-		}
-	}
-
-	// init oss
-	if conf.OSSDsn != "" {
-		if err := oss.Init(conf.OSSDsn); err != nil {
-			return errors.Wrap(err, "init oss client error")
-		}
-	}
+	// if err := storage.InitMySQLClient(ctx, conf.MysqlDsn); err != nil {
+	// 	return errors.Wrap(err, "init mysql storage client error")
+	// }
+	// if err := storage.InitMongoClient(ctx, conf.MongoDsn); err != nil {
+	// 	return errors.Wrap(err, "init mongo storage client error")
+	// }
 
 	// init cache
 	cache.InitMemoryCache(time.Minute*5, time.Minute)
-	if conf.Redis != nil {
-		if err := cache.InitRedisCache(ctx, conf.Redis.Addrs, conf.Redis.Password); err != nil {
-			return errors.Wrap(err, "init redis cache client error")
-		}
-	}
 
 	// init repository
-	if conf.MysqlDsn != "" || conf.MongoDsn != "" {
-		repository.Init()
-	}
-
-	// init pubsub
-	if conf.Pulsar != nil {
-		if err := pubsub.InitPulsarClient(conf.Pulsar.Url); err != nil {
-			return errors.Wrap(err, "init pulsar client error")
-		}
-	}
-	if conf.Kafka != nil {
-		if err := pubsub.InitKafkaConn(ctx, conf.Kafka.Address, conf.Kafka.Topic, conf.Kafka.Partition); err != nil {
-			return errors.Wrap(err, "init kafka client error")
-		}
-	}
-
-	// init email
-	if conf.Email != nil {
-		if err := emailc.Init(*conf.Email); err != nil {
-			return errors.Wrap(err, "init email client error")
-		}
-	}
-
-	// init clickhouse
-	if conf.ClickhouseDsn != "" {
-		if err := storage.InitClickhouseDatabase(ctx, conf.ClickhouseDsn); err != nil {
-			return errors.Wrap(err, "init clickhouse storage database error")
-		}
-	}
-
-	// init elasticsearch
-	if conf.ElasticsearchUrl != "" {
-		if err := storage.InitElasticsearchClient(ctx, conf.ElasticsearchUrl); err != nil {
-			return errors.Wrap(err, "init elasticsearch client error")
-		}
-	}
+	repository.Init()
 
 	// init service
 	service.Init()
